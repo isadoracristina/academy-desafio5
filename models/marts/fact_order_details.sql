@@ -36,5 +36,39 @@ with
         left join employees on orders.employee_id = employees.employee_id
         left join customers on orders.customer_id = customers.customer_id
     )
+    , order_detail_with_sk as (
+        select
+            order_detail.order_id
+            , products.product_sk as product_fk
+            , order_detail.discount
+            , order_detail.unit_price
+            , order_detail.quantity
+            from {{ ref('stg_order_detail')}} as order_detail
+            left join products on order_detail.product_id = products.product_id
+    )
+    , final as (
+        select
+            order_detail_with_sk.order_id
+            , order_with_sk.customers.customer_sk as customer_fk
+            , order_with_sk.employees.employee_sk as employee_fk
 
-    select * from orders_with_sk
+            , order_with_sk.orders.ship_region
+            , order_with_sk.orders.shipped_date
+            , order_with_sk.orders.ship_country
+            , order_with_sk.orders.ship_name
+            , order_with_sk.orders.order_date
+            , order_with_sk.orders.ship_postal_code
+            , order_with_sk.orders.ship_city
+            , order_with_sk.orders.freight
+            , order_with_sk.orders.required_date
+            , order_with_sk.orders.ship_address
+            , order_detail_with_sk.product_fk
+            , order_detail_with_sk.discount
+            , order_detail_with_sk.unit_price
+            , order_detail_with_sk.quantity
+            from orders_with_sk
+            left join order_detail_with_sk on orders_with_sk.order_id = order_detail_with_sk.order_id
+
+    )
+
+    select * from final
