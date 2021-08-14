@@ -1,0 +1,28 @@
+version: 2
+
+sources:
+  - name: northwind_el
+    description: This is a replica of the Postgres database used by our client. 
+    tables:
+    - name: orders 
+      description: >
+        One record per order.
+      columns:
+        - name: order_id
+          description: Primary key of the orders table
+          testes:
+            - unique
+            - not null
+    - name: products
+      description: Product.
+    #- names: shippers
+    #  description: Shippers.
+    - name: employees
+      description: Employees.
+    - name: customers
+      description: Customers.
+    - name: suppliers
+      description: Suppliers.
+    - name: order_details
+      description: Order details.
+    
