@@ -15,7 +15,7 @@ with
         select *
         from {{ ref('dim_suppliers')}}
     ),
-    orders_with_sk as (
+    order_with_sk as (
         select
             order_id
             , customers.customer_sk as customer_fk
@@ -43,31 +43,31 @@ with
             , order_detail.discount
             , order_detail.unit_price
             , order_detail.quantity
-            from {{ ref('stg_order_detail')}} as order_detail
+            from {{ ref('stg_order_details')}} as order_detail
             left join products on order_detail.product_id = products.product_id
     )
     , final as (
         select
             order_detail_with_sk.order_id
-            , order_with_sk.customers.customer_sk as customer_fk
-            , order_with_sk.employees.employee_sk as employee_fk
+            , order_with_sk.customer_fk
+            , order_with_sk.employee_fk
 
-            , order_with_sk.orders.ship_region
-            , order_with_sk.orders.shipped_date
-            , order_with_sk.orders.ship_country
-            , order_with_sk.orders.ship_name
-            , order_with_sk.orders.order_date
-            , order_with_sk.orders.ship_postal_code
-            , order_with_sk.orders.ship_city
-            , order_with_sk.orders.freight
-            , order_with_sk.orders.required_date
-            , order_with_sk.orders.ship_address
+            , order_with_sk.ship_region
+            , order_with_sk.shipped_date
+            , order_with_sk.ship_country
+            , order_with_sk.ship_name
+            , order_with_sk.order_date
+            , order_with_sk.ship_postal_code
+            , order_with_sk.ship_city
+            , order_with_sk.freight
+            , order_with_sk.required_date
+            , order_with_sk.ship_address
             , order_detail_with_sk.product_fk
             , order_detail_with_sk.discount
             , order_detail_with_sk.unit_price
             , order_detail_with_sk.quantity
-            from orders_with_sk
-            left join order_detail_with_sk on orders_with_sk.order_id = order_detail_with_sk.order_id
+            from order_with_sk
+            left join order_detail_with_sk on order_with_sk.order_id = order_detail_with_sk.order_id
 
     )
 
